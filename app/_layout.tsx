@@ -1,13 +1,14 @@
 import React from 'react';
+import { Slot } from 'expo-router'; // Permite renderizar rotas dinamicamente
 import { AuthProvider } from '../assets/components/authContext';
-import LoginPage from './loginPage';
 
-const App: React.FC = () => {
+const Layout: React.FC = () => {
   return (
     <AuthProvider>
-      <LoginPage />
+      {/* Renderiza a página correspondente à rota atual */}
+      <Slot />
     </AuthProvider>
   );
 };
 
-export default App;
+export default Layout;
