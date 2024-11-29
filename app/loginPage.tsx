@@ -22,7 +22,7 @@ const logo = require('../assets/images/logo.png');
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
-  const [randomMessage, setRandomMessage] = useState<string>('');
+  const [randomMessage, setRandomMessage] = useState<string>('Carregando mensagem...');
   const auth = useContext(AuthContext);
   const router = useRouter();
 
@@ -56,6 +56,10 @@ const LoginPage: React.FC = () => {
     router.push('/signupPage'); // Redireciona para a página de cadastro
   };
 
+  const handleForget = () => {
+    router.push('/Password'); // Redireciona para a página de cadastro
+  };
+
   return (
     <View style={styles.container}>
       <Image source={logo} style={styles.logo} />
@@ -63,7 +67,9 @@ const LoginPage: React.FC = () => {
 
       <View style={styles.box}>
         <Text style={styles.title}>Login</Text>
-        <Text style={styles.randomMessage}>{randomMessage}</Text> {/* Exibe a mensagem aleatória */}
+        {randomMessage && (
+          <Text style={styles.randomMessage}>{randomMessage}</Text>
+        )}
 
         <TextInput
           style={styles.input}
@@ -80,10 +86,13 @@ const LoginPage: React.FC = () => {
           onChangeText={setPassword}
         />
         <Button title="Entrar" onPress={handleLogin} />
-
-        <TouchableOpacity onPress={handleSignUp} style={styles.signUpButton}>
-          <Text style={styles.signUpTest}>Esqueci minha Senha</Text>
+        
+        <TouchableOpacity onPress={handleSignUp} style={styles.signUpButton}>          
           <Text style={styles.signUpText}>Criar Cadastro</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={handleForget} style={styles.signUpButton2}>
+          <Text style={styles.signUpText}>Esqueci a senha</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -135,6 +144,10 @@ const styles = StyleSheet.create({
   },
   signUpButton: {
     marginTop: 20,
+    alignItems: 'center',
+  },
+  signUpButton2: {
+    marginTop: 2,
     alignItems: 'center',
   },
   signUpText: {
