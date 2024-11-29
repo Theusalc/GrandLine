@@ -1,19 +1,50 @@
-import React, { useState, useContext } from 'react';
-import { View,  Text,  TextInput,  Button,  StyleSheet,  Alert,  TouchableOpacity,  Image, } from 'react-native';
-import { useRouter } from 'expo-router'; // Hook para navegação
+import React, { useState, useContext, useEffect } from 'react';
+import { View, Text, TextInput, Button, StyleSheet, Alert, TouchableOpacity, Image } from 'react-native';
+import { useRouter } from 'expo-router';
 import { AuthContext } from '../assets/components/authContext';
+import * as Notifications from 'expo-notifications';
+
+// Função para gerar mensagem aleatória
+const getRandomMessage = (): string => {
+  const messages = [
+    'Prepare-se para um grande treino!',
+    'Não pare até se orgulhar de si mesmo!',
+    'A dor é temporária, o orgulho é para sempre!',
+    'Desafie seus limites hoje!',
+    'Vamos conquistar o impossível juntos!',
+  ];
+  const randomIndex = Math.floor(Math.random() * messages.length);
+  return messages[randomIndex];
+};
 
 const logo = require('../assets/images/logo.png');
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
+  const [randomMessage, setRandomMessage] = useState<string>('');
   const auth = useContext(AuthContext);
   const router = useRouter();
 
-  const handleLogin = () => {
+  useEffect(() => {
+    // Gerar uma mensagem aleatória ao carregar a tela
+    const message = getRandomMessage();
+    setRandomMessage(message);
+  }, []);
+
+  const handleLogin = async () => {
     const success = auth?.login(email, password);
     if (success) {
+      // Envia uma notificação local ao logar com sucesso
+      await Notifications.scheduleNotificationAsync({
+        content: {
+          title: 'Login Realizado!',
+          body: `Bem-vindo, ${email}!`,
+          data: { userEmail: email },
+        },
+        trigger: { seconds: 1 },
+      });
+
       Alert.alert('Login bem-sucedido', 'Bem-vindo!');
       router.push('/homePage'); // Redireciona para a HomePage
     } else {
@@ -22,7 +53,7 @@ const LoginPage: React.FC = () => {
   };
 
   const handleSignUp = () => {
-    router.push('/signupPage'); // Redireciona para a tela de cadastro (opcional)
+    router.push('/signupPage'); // Redireciona para a página de cadastro
   };
 
   return (
@@ -32,6 +63,8 @@ const LoginPage: React.FC = () => {
 
       <View style={styles.box}>
         <Text style={styles.title}>Login</Text>
+        <Text style={styles.randomMessage}>{randomMessage}</Text> {/* Exibe a mensagem aleatória */}
+
         <TextInput
           style={styles.input}
           placeholder="E-mail"
@@ -83,6 +116,13 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     textAlign: 'center',
     color: '#1E3A5F',
+  },
+  randomMessage: {
+    fontSize: 16,
+    color: '#1E3A5F',
+    fontStyle: 'italic',
+    marginBottom: 20,
+    textAlign: 'center',
   },
   input: {
     height: 50,
